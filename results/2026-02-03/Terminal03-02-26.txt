@@ -1,0 +1,97 @@
+    1  pwd
+    2  mkdir bioinfo
+    3  cd bioinfo
+    4  cd data
+    5  mkdir data
+    6  mkdir doc
+    7  mkdir results
+    8  cd doc
+    9  touch references.bib
+   10  cd ..
+   11  ls -1
+   12  cd results
+   13  mkdir 2026-01-29
+   14  mkdir 2026-02-03
+   15  mkdir 2026-02-10
+   16  mkdir 2026-02-17
+   17  mkdir 2026-02-24
+   18  mkdir 2026-03-03
+   19  mkdir 2026-03-10
+   20  mkdir 2026-03-24
+   21  mkdir 2026-03-31
+   22  mkdir 2026-04-15
+   23  mkdir 2026-04-21
+   24  mkdir 2026-04-28
+   25  mkdir 2026-05-05
+   26  cd 2026-01-29
+   27  pwd
+   28  mv ../../../Descargas/guio-es.Qmd README.qmd
+   29  cd ..
+   30  cd descargas
+   31  cd ~
+   32  cd Descargas
+   33  cd home
+   34  cd descargas
+   35  cd download
+   36  cd susana
+   37  cd susan
+   38  cd Downloads
+   39  cd home
+   40  pwd
+   41  cd Downloads
+   42  pwd
+   43  cd bioinfo
+   44  cd results
+   45  cd 2026-01-29
+   46  mv ../../../guio-es.Qmd README.qmd
+   47  ls -1
+   48  exit
+   49  cd bioinfo
+   50  cd ..
+   51  ls
+   52  cd home
+   53  cd susana
+   54  cd bioinfo
+   55  cd results/2026-01-29
+   56  ls
+   57  ls -lh
+   58  cd ..
+   59  apt install git
+   60  sudo apt install git
+   61  git config --global user.name "Susana Rangel"
+   62  git config --global user.email "suranfer@alumni.uv.es"
+   63  git config --global core.editor "nano -w"
+   64  git config --global init.defaultBranch tronco
+   65  git config --list
+   66  git init
+   67  git status
+   68  git add doc
+   69  git add results
+   70  git status
+   71  git commit -m "La práctica 1 está empezada, faltan por hacer los alineamientos"
+   72  git status
+   73  git log
+   74  nano .gitignore
+   75  ls
+   76  nano README.md
+   77  nano LICENSE.txt
+   78  git status
+   79  git add LICENSE.txt
+   80  git README.md
+   81  git add README.md
+   82  ssh-keygen -t ed25519 -C "suranfer@alumni.uv.es"
+   83  cat ~/.ssh/ed25519.pub
+   84  cd ..
+   85  cat ~/.ssh/ed25519.pub
+   86  cat ~/.ssh/id_ed25519.pub
+   87  git add .
+   88  git LICENSE.txt
+   89  git add LICENSE.txt
+   90  git status
+   91  cd bioinfo
+   92  git status
+   93  git commit -m "he creado los archivos de texto README y LICENSE para crear el repositorio de GitHub"
+   94  git remote add origin git@github.com:suranfer/BIOINFORMATICA.git
+   95  git push -u origin tronco
+   96  git push
+   97  history > 3-02-2026.txt
