@@ -1,0 +1,13 @@
+---
+title: "Practica1.apendice"
+format: html
+---
+
+## Apéndice. Alineamientos múltiples
+
+En este documento de Quarto ejecutaré el comando `includeHTML` que no apliqué en el guión original porque el tamaño del archivo aumenta considerablemente y dificulta su visualización en formato HTML en GitHub.
+
+```{r}
+library('htmltools')
+includeHTML('./PF00009.html')
+```
