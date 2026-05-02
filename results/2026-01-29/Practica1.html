@@ -53,7 +53,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}</style>
 
 
 <script>/*!
@@ -3098,7 +3118,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Última actualización:</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">26 de abril de 2026</p>
+      <p class="date">2 de mayo de 2026</p>
     </div>
   </div>
   
@@ -3112,7 +3132,7 @@ vertical-align: -.125em;
 
 <section id="preparación" class="level1">
 <h1>Preparación</h1>
-<p>Hacen falta los programas <code>needle</code> y <code>water</code> de <a href="http://emboss.open-bio.org/">EMBOS</a>, el programa <a href="https://www.animalgenome.org/bioinfo/resources/manuals/exonerate/index.html"><code>exonerate</code></a> <span class="citation" data-cites="Slater2005">(<a href="#ref-Slater2005" role="doc-biblioref"><strong>Slater2005?</strong></a>)</span>, y el programa <a href="https://www.drive5.com/muscle5/"><code>muscle</code></a><span class="citation" data-cites="Edgar2022">(<a href="#ref-Edgar2022" role="doc-biblioref"><strong>Edgar2022?</strong></a>)</span>. Para la descarga automática de secuencias usaremos el programa <code>wget</code>. En sistemas operativos basados en Debian, seguramente se pueden instalar los cinco programas así (con privilegios administrativos):</p>
+<p>Hacen falta los programas <code>needle</code> y <code>water</code> de <a href="http://emboss.open-bio.org/">EMBOS</a>, el programa <a href="https://www.animalgenome.org/bioinfo/resources/manuals/exonerate/index.html"><code>exonerate</code></a> <span class="citation" data-cites="Slater2005">(<a href="#ref-Slater2005" role="doc-biblioref">Slater y Birney 2025</a>)</span>, y el programa <a href="https://www.drive5.com/muscle5/"><code>muscle</code></a><span class="citation" data-cites="Edgar2022">(<a href="#ref-Edgar2022" role="doc-biblioref">Edgar 2022</a>)</span>. Para la descarga automática de secuencias usaremos el programa <code>wget</code>. En sistemas operativos basados en Debian, seguramente se pueden instalar los cinco programas así (con privilegios administrativos):</p>
 <pre><code>apt install emboss exonerate wget muscle</code></pre>
 <p>Antes de instalarlos, actualizamos los repositorios con <code>sudo apt update</code> y luego ya ejecutamos la línea de código anterior. A continuación, comprobamos que cada uno de los programas que necesitamos se instalaron correctamente:</p>
 <ul>
@@ -3403,7 +3423,7 @@ Desafíos
 </ol>
 </div>
 </div>
-<p>Para alinear transcritos o incluso proteínas a un genoma de referencia, es mejor usar el programa <code>exonerate</code> <span class="citation" data-cites="Slater2005">(<a href="#ref-Slater2005" role="doc-biblioref"><strong>Slater2005?</strong></a>)</span>, que puede aplicar los parámetros más adecuados para este tipo de tarea. Puedes leer la documentación de <code>exonerate</code> mediante las órdenes <code>man exonerate</code> o <code>exonerate --help</code>. También existe <a href="https://www.animalgenome.org/bioinfo/resources/manuals/exonerate/index.html">documentación online sobre este programa</a>. En el bloque siguiente repetimos el mismo alineamiento que antes, pero con <code>exonerate</code>.</p>
+<p>Para alinear transcritos o incluso proteínas a un genoma de referencia, es mejor usar el programa <code>exonerate</code> <span class="citation" data-cites="Slater2005">(<a href="#ref-Slater2005" role="doc-biblioref">Slater y Birney 2025</a>)</span>, que puede aplicar los parámetros más adecuados para este tipo de tarea. Puedes leer la documentación de <code>exonerate</code> mediante las órdenes <code>man exonerate</code> o <code>exonerate --help</code>. También existe <a href="https://www.animalgenome.org/bioinfo/resources/manuals/exonerate/index.html">documentación online sobre este programa</a>. En el bloque siguiente repetimos el mismo alineamiento que antes, pero con <code>exonerate</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> HumanSMARCD2.fa <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">wget</span> <span class="at">-O</span> HumanSMARCD2.fa https://www.ebi.ac.uk/ena/browser/api/fasta/AAI36323.1</span>
@@ -3579,7 +3599,7 @@ Desafío
 </section>
 <section id="apéndice.-alineamientos-múltiples" class="level1">
 <h1>Apéndice. Alineamientos múltiples</h1>
-<p>Un programa muy popular para alineamiento de múltiples secuencias es <a href="https://drive5.com/muscle/"><code>muscle</code></a> <span class="citation" data-cites="Edgar2022">(<a href="#ref-Edgar2022" role="doc-biblioref"><strong>Edgar2022?</strong></a>)</span>. Suponiendo que está instalado, vamos a probarlo con una colección de secuencias que pertenecen a la familia <a href="https://www.ebi.ac.uk/interpro/entry/pfam/PF00009/">PF00009</a>:</p>
+<p>Un programa muy popular para alineamiento de múltiples secuencias es <a href="https://drive5.com/muscle/"><code>muscle</code></a> <span class="citation" data-cites="Edgar2022">(<a href="#ref-Edgar2022" role="doc-biblioref">Edgar 2022</a>)</span>. Suponiendo que está instalado, vamos a probarlo con una colección de secuencias que pertenecen a la familia <a href="https://www.ebi.ac.uk/interpro/entry/pfam/PF00009/">PF00009</a>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> PF00009.fa <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">wget</span> <span class="at">-O</span> PF00009.fa https://raw.githubusercontent.com/rcedgar/balifam/refs/heads/main/balifam100/in/PF00009.100</span>
@@ -3591,11 +3611,49 @@ Desafío
 </div>
 <p>Para visualizar el alineamiento, podemos usar la función <code>BrowseSeqs()</code>, del paquete <code>DECIPHER</code> en el entorno de R. Esta función nos permite enviar el alineamiento a un archivo HTML, que puede abrirse en una ventana nueva. Si estamos compilando un documento HTML, podemos incorporar el alineamiento en el mismo documento mediante la función <code>includeHTML()</code> del paquete <code>htmltools</code>, al precio de aumentar considerablemente su tamaño.</p>
 <div class="cell" data-messages="false">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;htmltools&#39;</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;DECIPHER&#39;</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>PF00009 <span class="ot">&lt;-</span> <span class="fu">readAAStringSet</span>(<span class="st">&#39;PF00009.afa&#39;</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">BrowseSeqs</span>(PF00009, <span class="at">htmlFile =</span> <span class="st">&#39;PF00009.html&#39;</span>, <span class="at">openURL =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">includeHTML</span>(<span class="st">&#39;./PF00009.html&#39;</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;DECIPHER&#39;</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>PF00009 <span class="ot">&lt;-</span> <span class="fu">readAAStringSet</span>(<span class="st">&#39;PF00009.afa&#39;</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">BrowseSeqs</span>(PF00009, <span class="at">htmlFile =</span> <span class="st">&#39;PF00009.html&#39;</span>, <span class="at">openURL =</span> <span class="cn">FALSE</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>No tengo instalado en R el paquete <code>DECIPHER</code>, por lo que voy a intentar instalarlo desde Bioconductor:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;DECIPHER&quot;</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>&#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
+&#39;help(&quot;repositories&quot;, package = &quot;BiocManager&quot;)&#39; for details.
+Replacement repositories:
+    CRAN: https://cloud.r-project.org</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Bioconductor version 3.22 (BiocManager 1.30.27), R 4.5.3 (2026-03-11)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
+  `force = TRUE` to re-install: &#39;DECIPHER&#39;</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Installation paths not writeable, unable to update packages
+  path: /usr/lib/R/library
+  packages:
+    spatial</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Old packages: &#39;fs&#39;, &#39;systemfonts&#39;, &#39;textshaping&#39;</code></pre>
+</div>
+</div>
+<p>Al ejecutar nuevamente <code>library(&#39;DECIPHER&#39;)</code>, compruebo que se ha instalado correctamente y ejecuto el resto del código para obtener el archivo con el alineamiento en formato HTML (<em>PF00009.html).</em></p>
+<p>Para terminar, incorporo el alineamiento en este mismo documento:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&#39;htmltools&#39;</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">includeHTML</span>(<span class="st">&#39;./PF00009.html&#39;</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: `includeHTML()` was provided a `path` that appears to be a complete HTML document.
+x Path: ./PF00009.html
+i Use `tags$iframe()` to include an HTML document. You can either ensure `path` is accessible in your app or document (see e.g. `shiny::addResourcePath()`) and pass the relative path to the `src` argument. Or you can read the contents of `path` and pass the contents to `srcdoc`.</code></pre>
+</div>
 <div class="cell-output-display">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>
 
@@ -3747,40 +3805,17 @@ Desafío
 </pre>
 </div>
 </div>
-<p>No tengo instalado en R el paquete <code>DECIPHER</code>, por lo que voy a intentar instalarlo desde Bioconductor:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;DECIPHER&quot;</span>)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>&#39;getOption(&quot;repos&quot;)&#39; replaces Bioconductor standard repositories, see
-&#39;help(&quot;repositories&quot;, package = &quot;BiocManager&quot;)&#39; for details.
-Replacement repositories:
-    CRAN: https://cloud.r-project.org</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Bioconductor version 3.22 (BiocManager 1.30.27), R 4.5.2 (2025-10-31)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package(s) not installed when version(s) same as or greater than current; use
-  `force = TRUE` to re-install: &#39;DECIPHER&#39;</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Installation paths not writeable, unable to update packages
-  path: /usr/lib/R/library
-  packages:
-    lattice, Matrix, nlme, rpart, spatial</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Old packages: &#39;fs&#39;, &#39;systemfonts&#39;, &#39;textshaping&#39;</code></pre>
-</div>
-</div>
-<p>Al ejecutar nuevamente <code>library(&#39;DECIPHER&#39;)</code>, compruebo que se ha instalado correctamente y ejecuto el resto de líneas del código del guión, excepto <code>includeHTML</code>. Esto es porque el tamaño del documento HTML del guión que compilaré a continuación será muy grande y, al subirlo a GitHub, no se puede visualizar (he comprobado que ocurre en los respositorios de algunas compañeras).</p>
-<p>Por tanto, crearé un nuevo archivo .qmd (<em>Practica1.apendice.qmd)</em> donde incluiré únicamente el resultado de aplicar dicho comando.</p>
+
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Bibliografía</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-Edgar2022" class="csl-entry" role="listitem">
+Edgar, R. C. 2022. <span>«Muscle5: High-accuracy alignment ensembles enable unbiased assessments of sequence homology and phylogeny»</span>. <em>Nature Communications</em> 13: 6968. <a href="https://doi.org/10.1038/s41467-022-34630-w">https://doi.org/10.1038/s41467-022-34630-w</a>.
+</div>
+<div id="ref-Slater2005" class="csl-entry" role="listitem">
+Slater, G. S. C., y E. Birney. 2025. <span>«Automated generation of heuristics for biological sequence comparison»</span>. <em>BMC Bioinformatics</em> 6: 31. <a href="https://doi.org/10.1186/1471-2105-6-31">https://doi.org/10.1186/1471-2105-6-31</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
