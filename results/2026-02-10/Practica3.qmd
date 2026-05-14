@@ -156,15 +156,16 @@ fi
 -   ¿Crees que deberíamos guardar los archivos descargados en
     `../../data`?
 
-    Un rotundo sí. En cuanto acabe la práctica, los archivos que
-    contengan **resultados** se quedaran en la carpeta correspondiente
-    dentro de `results`, y a los archivos FASTQ o FASTA de gran volumen
-    (MB) los reubicaré en la carpeta `data` para que `git` los ignore y
-    no acarreen problemas a la hora de subir todo a GitHub.
-
-    Además, también contribuye a mantener el orden y, realmente, la
-    finalidad de la carpeta `data` es esa: contener los datos originales
-    sin modificaciones.
+    No, todos los archivos descargados mediante `wget` desde el script
+    (.qmd) se consideran "resultados", aunque a lo largo del análisis
+    los usemos como "datos". Por tanto, deben quedarse en su carpeta
+    correspondiente dentro de `results`. Sin embargo, una cosa
+    importante a tener en cuenta es que esto no significa que todos los
+    "resultados" de esta índole deban incluirse en el repositorio de
+    Git. De hecho, se recomienda no incluir en éste archivos de más de
+    10 Mb. Al fin y al cabo, esto no acarrea problemas de
+    reproducibilidad ya que, gracias a los condicionales if, ese tipo de
+    archivos suelen regenerarse automáticamente si no están.
 
 -   ¿Cómo podrías guardar los mensajes de `wget` en un archivo?
 
@@ -177,7 +178,7 @@ fi
     minúscula) por el nombre que queramos ponerle al archivo destino. Se
     quedaría, por ejemplo:
 
-    ```         
+    ```{bash, eval=FALSE}
     wget -o wget.msg.txt -O referencia.fa https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2
     ```
 
@@ -200,22 +201,23 @@ fi
 # Control de calidad
 
 ```{bash}
+export PATH=$PATH:~/bin
 if [ ! -e fastp.html ]; then
    # Si "fastp" está en la carpeta actual y  no en el PATH, escribe "./fastp"
    # en lugar de "fastp".
-   /home/susana/bin/fastp -i DRR025089_1.fastq.gz \
-                          -o DRR025089_1_clean.fastq \
-                          -I DRR025089_2.fastq.gz \
-                          -O DRR025089_2_clean.fastq \
-                          --merge \
-                          --merged_out DRR025089_m_clean.fastq
+   fastp -i DRR025089_1.fastq.gz \
+         -o DRR025089_1_clean.fastq \
+         -I DRR025089_2.fastq.gz \
+         -O DRR025089_2_clean.fastq \
+         --merge \
+         --merged_out DRR025089_m_clean.fastq
 fi
 ```
 
-Para poder ejecutar `fastp` desde el chunk de R he tenido que
-especificar su path porque parece que el entorno de R no estaba
-heredando correctamente mi PATH de Bash (en el que comprobé que `fastp`
-efectivamente estaba incluido).
+Como R no reconoce correctamente mi PATH, debo configurar manualmente
+cada chunk de Bash al inicio con la siguiente línea de código:
+`export PATH=$PATH:~/bin` cada vez que quiera usar un programa
+ejecutable de mi carpeta \~/bin.
 
 ::: {.callout-note icon="false"}
 ## Ejercicios
@@ -228,19 +230,19 @@ efectivamente estaba incluido).
     generando 2 archivos de cada muestra, como en nuestro caso:
     DRR...\_1 y \_2).
 
-    -   -i –\> input del primer archivo, también llamado read, sin
+    -   `-i` –\> input del primer archivo, también llamado read, sin
         limpiar (original).
 
-    -   -o –\> output del read 1 ya procesado y limpio.
+    -   `-o` –\> output del read 1 ya procesado y limpio.
 
-    -   -I –\> input del read 2 (sin limpiar).
+    -   `-I` –\> input del read 2 (sin limpiar).
 
-    -   -O –\> output del read 2 (limpio).
+    -   `-O` –\> output del read 2 (limpio).
 
-    -   --merge –\> buscar solapamientos entre el par de **inputs** para
-        intentar reconstruir una secuencia única.
+    -   `--merge` –\> buscar solapamientos entre el par de **inputs**
+        para intentar reconstruir una secuencia única.
 
-    -   --merged out –\> especificar el nombre del archivo donde se
+    -   `--merged out` –\> especificar el nombre del archivo donde se
         guarda la secuencia resultante del `--merge` (si hubiera).
 
 2.  Revisa el informe generado por `fastp` en el archivo `fastp.html` y
@@ -273,15 +275,16 @@ efectivamente estaba incluido).
     ```
 
     ```{bash}
+    export PATH=$PATH:~/bin
     if [ ! -e fastp2.html ]; then
-        /home/susana/bin/fastp -i DRR025081_1.fastq.gz \
-                               -o DRR025081_1_clean.fastq \
-                               -I DRR025081_2.fastq.gz \
-                               -O DRR025081_2_clean.fastq \
-                               --merge \
-                               --merged_out DRR025081_m_clean.fastq \
-                               --html fastp2.html \
-                               --json fastp2.json
+        fastp -i DRR025081_1.fastq.gz \
+              -o DRR025081_1_clean.fastq \
+              -I DRR025081_2.fastq.gz \
+              -O DRR025081_2_clean.fastq \
+              --merge \
+              --merged_out DRR025081_m_clean.fastq \
+              --html fastp2.html \
+              --json fastp2.json
     fi
     ```
 :::
@@ -300,6 +303,7 @@ generarlos de nuevo cada vez que compilemos este documento si el archivo
 final ya está presente en la carpeta de trabajo.
 
 ```{bash}
+export PATH=$PATH:~/bin
 if [ ! -e DRR025089.bam ]; then
    if [ ! -e DRR025089_unsorted.bam ]; then
       if [ ! -e DRR025089.sam ]; then
@@ -308,9 +312,9 @@ if [ ! -e DRR025089.bam ]; then
         https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2
            fi
          if [ ! -e referencia.fa.bwt ]; then
-           /home/susana/bin/bwa/bwa index referencia.fa
+            bwa index referencia.fa
          fi
-         /home/susana/bin/bwa/bwa mem -M -R '@RG\tID:DRR025089\tSM:SAMD00022947' \
+         bwa mem -M -R '@RG\tID:DRR025089\tSM:SAMD00022947' \
                  -o DRR025089.sam \
                  referencia.fa \
                  DRR025089_1_clean.fastq \
@@ -349,6 +353,7 @@ fi
     cortas que `fastp` había combinado (`DRR025089_m_clean.fastq`).
 
     ```{bash}
+    export PATH=$PATH:~/bin
     if [ ! -e DRR025089_merged.bam ]; then
        if [ ! -e DRR025089_merged_unsorted.bam ]; then
           if [ ! -e DRR025089_merged.sam ]; then
@@ -357,9 +362,9 @@ fi
             https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2
                fi
              if [ ! -e referencia.fa.bwt ]; then
-               /home/susana/bin/bwa/bwa index referencia.fa
+                bwa index referencia.fa
              fi
-             /home/susana/bin/bwa/bwa mem -M -R '@RG\tID:DRR025089\tSM:SAMD00022947' \
+             bwa mem -M -R '@RG\tID:DRR025089\tSM:SAMD00022947' \
                      -o DRR025089_merged.sam \
                      referencia.fa \
                      DRR025089_m_clean.fastq
@@ -485,8 +490,9 @@ samtools tview DRR025089.bam referencia.fa
 # Identificación de variantes
 
 ```{bash}
+export PATH=$PATH:~/miniconda3/bin
 if [ ! -e DRR025089.vcf ]; then
-   /home/susana/miniconda3/bin/freebayes -p 1 -f referencia.fa DRR025089.bam > DRR025089.vcf
+   freebayes -p 1 -f referencia.fa DRR025089.bam > DRR025089.vcf
 fi
 ```
 
