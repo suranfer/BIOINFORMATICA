@@ -3342,7 +3342,7 @@ border: 0;
     <div>
     <div class="quarto-title-meta-heading">Última actualización:</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">11 de mayo de 2026</p>
+      <p class="date">14 de mayo de 2026</p>
     </div>
   </div>
   
@@ -5131,8 +5131,8 @@ Ejercicio 6
 <p>Descargar todas las páginas de dominios presentes en proteínas de equinodermos puede llevar bastante tiempo. Por eso, guardo el marco de datos resultante en un archivo y me ahorro tener que ejecutar la búsqueda cada vez que le doy al botón <code>Render</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Si ya existe la tabla, la cargamos:</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(<span class="st">&#39;equinodermata.Rds&#39;</span>)) {</span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>   equinodermata <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&#39;equinodermata.Rds&#39;</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(<span class="st">&#39;../../data/equinodermata.Rds&#39;</span>)) {</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>   equinodermata <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&#39;../../data/equinodermata.Rds&#39;</span>)</span>
 <span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Si no existe, la creamos:</span></span>
 <span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>   primera <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">paste0</span>(API, <span class="st">&#39;entry/pfam/taxonomy/uniprot/7586&#39;</span>))</span>
@@ -5155,8 +5155,8 @@ Ejercicio 6
 </div>
 <p>A continuación, hago lo mismo para los cordados. Puesto que conocemos más proteínas de cordados que de equinodermos, no es sorprendente que haya más dominios proteicos conocidos de cordados. Por cierto, los cordados son el taxon 7711.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(<span class="st">&#39;chordata.Rds&#39;</span>)) {</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>   chordata <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&#39;chordata.Rds&#39;</span>)</span>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">file.exists</span>(<span class="st">&#39;../../data/chordata.Rds&#39;</span>)) {</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>   chordata <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&#39;../../data/chordata.Rds&#39;</span>)</span>
 <span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>   primera <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(<span class="fu">paste0</span>(API, <span class="st">&#39;entry/pfam/taxonomy/uniprot/7711&#39;</span>))</span>
 <span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>   todas <span class="ot">&lt;-</span> <span class="fu">list</span>(primera[[<span class="st">&#39;results&#39;</span>]][[<span class="st">&#39;metadata&#39;</span>]])</span>
