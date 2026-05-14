@@ -3118,7 +3118,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Última actualización:</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2 de mayo de 2026</p>
+      <p class="date">14 de mayo de 2026</p>
     </div>
   </div>
   
@@ -3261,12 +3261,13 @@ Preguntas
 <div class="callout-body-container callout-body">
 <ul>
 <li><p>¿Crees que deberíamos guardar los archivos descargados en <code>../../data</code>?</p>
-<p>Un rotundo sí. En cuanto acabe la práctica, los archivos que contengan <strong>resultados</strong> se quedaran en la carpeta correspondiente dentro de <code>results</code>, y a los archivos FASTQ o FASTA de gran volumen (MB) los reubicaré en la carpeta <code>data</code> para que <code>git</code> los ignore y no acarreen problemas a la hora de subir todo a GitHub.</p>
-<p>Además, también contribuye a mantener el orden y, realmente, la finalidad de la carpeta <code>data</code> es esa: contener los datos originales sin modificaciones.</p></li>
+<p>No, todos los archivos descargados mediante <code>wget</code> desde el script (.qmd) se consideran “resultados”, aunque a lo largo del análisis los usemos como “datos”. Por tanto, deben quedarse en su carpeta correspondiente dentro de <code>results</code>. Sin embargo, una cosa importante a tener en cuenta es que esto no significa que todos los “resultados” de esta índole deban incluirse en el repositorio de Git. De hecho, se recomienda no incluir en éste archivos de más de 10 Mb. Al fin y al cabo, esto no acarrea problemas de reproducibilidad ya que, gracias a los condicionales if, ese tipo de archivos suelen regenerarse automáticamente si no están.</p></li>
 <li><p>¿Cómo podrías guardar los mensajes de <code>wget</code> en un archivo?</p>
 <p>Los mensajes de <code>wget</code> nos sirven para mantener un <em>registro</em> de lo que vamos descargando y guardar información relevante relacionada con ello (fecha, errores o avisos, etc).</p>
 <p>Para redirigir los mensajes a un nuevo archivo, editamos el comando <code>wget</code> cambiando <code>/dev/null</code> detrás del parámetro -o (letra minúscula) por el nombre que queramos ponerle al archivo destino. Se quedaría, por ejemplo:</p>
-<pre><code>wget -o wget.msg.txt -O referencia.fa https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2</code></pre></li>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-o</span> wget.msg.txt <span class="at">-O</span> referencia.fa https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
 <li><p>¿De cuántas secuencias diferentes se compone este genoma de referencia?</p>
 <p>Dado que el archivo de nuestro genoma de referencia está en formato FASTA, cada secuencia empieza por un encabezado <code>&gt;</code>, de modo que si sabemos cuántas líneas empiezan con <code>&gt;</code>, sabremos cuántas secuencias hay. Para ello utilizaremos <code>grep</code>:</p>
 <div class="cell">
@@ -3285,18 +3286,19 @@ Preguntas
 <section id="control-de-calidad" class="level1">
 <h1>Control de calidad</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> fastp.html <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Si &quot;fastp&quot; está en la carpeta actual y  no en el PATH, escribe &quot;./fastp&quot;</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>   <span class="co"># en lugar de &quot;fastp&quot;.</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>   <span class="ex">/home/susana/bin/fastp</span> <span class="at">-i</span> DRR025089_1.fastq.gz <span class="dt">\</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">-o</span> DRR025089_1_clean.fastq <span class="dt">\</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">-I</span> DRR025089_2.fastq.gz <span class="dt">\</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">-O</span> DRR025089_2_clean.fastq <span class="dt">\</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">--merge</span> <span class="dt">\</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                          <span class="at">--merged_out</span> DRR025089_m_clean.fastq</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/bin</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> fastp.html <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Si &quot;fastp&quot; está en la carpeta actual y  no en el PATH, escribe &quot;./fastp&quot;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>   <span class="co"># en lugar de &quot;fastp&quot;.</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>   <span class="ex">fastp</span> <span class="at">-i</span> DRR025089_1.fastq.gz <span class="dt">\</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">-o</span> DRR025089_1_clean.fastq <span class="dt">\</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">-I</span> DRR025089_2.fastq.gz <span class="dt">\</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">-O</span> DRR025089_2_clean.fastq <span class="dt">\</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">--merge</span> <span class="dt">\</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">--merged_out</span> DRR025089_m_clean.fastq</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Para poder ejecutar <code>fastp</code> desde el chunk de R he tenido que especificar su path porque parece que el entorno de R no estaba heredando correctamente mi PATH de Bash (en el que comprobé que <code>fastp</code> efectivamente estaba incluido).</p>
+<p>Como R no reconoce correctamente mi PATH, debo configurar manualmente cada chunk de Bash al inicio con la siguiente línea de código: <code>export PATH=$PATH:~/bin</code> cada vez que quiera usar un programa ejecutable de mi carpeta ~/bin.</p>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -3311,12 +3313,12 @@ Ejercicios
 <li><p>Revisa la ayuda del programa ejecutando <code>fastp -h</code>, y asegúrate de entender al menos las opciones que hemos usado.</p>
 <p><code>fastp</code> está pensado para limpiar lecturas <em>paired-end</em> (técnica en la que se secuencian los 2 extremos de un fragmento de DNA, generando 2 archivos de cada muestra, como en nuestro caso: DRR…_1 y _2).</p>
 <ul>
-<li><p>-i –&gt; input del primer archivo, también llamado read, sin limpiar (original).</p></li>
-<li><p>-o –&gt; output del read 1 ya procesado y limpio.</p></li>
-<li><p>-I –&gt; input del read 2 (sin limpiar).</p></li>
-<li><p>-O –&gt; output del read 2 (limpio).</p></li>
-<li><p>–merge –&gt; buscar solapamientos entre el par de <strong>inputs</strong> para intentar reconstruir una secuencia única.</p></li>
-<li><p>–merged out –&gt; especificar el nombre del archivo donde se guarda la secuencia resultante del <code>--merge</code> (si hubiera).</p></li>
+<li><p><code>-i</code> –&gt; input del primer archivo, también llamado read, sin limpiar (original).</p></li>
+<li><p><code>-o</code> –&gt; output del read 1 ya procesado y limpio.</p></li>
+<li><p><code>-I</code> –&gt; input del read 2 (sin limpiar).</p></li>
+<li><p><code>-O</code> –&gt; output del read 2 (limpio).</p></li>
+<li><p><code>--merge</code> –&gt; buscar solapamientos entre el par de <strong>inputs</strong> para intentar reconstruir una secuencia única.</p></li>
+<li><p><code>--merged out</code> –&gt; especificar el nombre del archivo donde se guarda la secuencia resultante del <code>--merge</code> (si hubiera).</p></li>
 </ul></li>
 <li><p>Revisa el informe generado por <code>fastp</code> en el archivo <code>fastp.html</code> y redacta un pequeño resumen de las principales conclusiones que sacas.</p>
 <p>Tras el filtrado, el número total de lecturas y nucleótidos disminuyó, los porcentajes de Q20 y Q30 aumentaron y el porcentaje GC se mantuvo prácticamente igual. Además, el pico del histograma de calidades de las lecturas se desplaza hacia calidades &gt;30 y la proporción de bases ambiguas “N” tras filtrar y unir (merge) se vuelve 0%. Por tanto, la calidad de los datos sería adecuada para análisis posteriores.</p></li>
@@ -3332,16 +3334,17 @@ Ejercicios
 <span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> fastp2.html <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">/home/susana/bin/fastp</span> <span class="at">-i</span> DRR025081_1.fastq.gz <span class="dt">\</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">-o</span> DRR025081_1_clean.fastq <span class="dt">\</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">-I</span> DRR025081_2.fastq.gz <span class="dt">\</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">-O</span> DRR025081_2_clean.fastq <span class="dt">\</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">--merge</span> <span class="dt">\</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">--merged_out</span> DRR025081_m_clean.fastq <span class="dt">\</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                           <span class="at">--html</span> fastp2.html <span class="dt">\</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">--json</span> fastp2.json</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/bin</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> fastp2.html <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">fastp</span> <span class="at">-i</span> DRR025081_1.fastq.gz <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">-o</span> DRR025081_1_clean.fastq <span class="dt">\</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">-I</span> DRR025081_2.fastq.gz <span class="dt">\</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">-O</span> DRR025081_2_clean.fastq <span class="dt">\</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">--merge</span> <span class="dt">\</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">--merged_out</span> DRR025081_m_clean.fastq <span class="dt">\</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">--html</span> fastp2.html <span class="dt">\</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">--json</span> fastp2.json</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></li>
 </ol>
 </div>
@@ -3351,33 +3354,34 @@ Ejercicios
 <h1>Mapeo</h1>
 <p>El objetivo de esta sección es alinear las lecturas cortas al genoma de referencia, mediante el programa <code>bwa</code>. El archivo final será un archivo BAM <em>ordenado</em>. Para obtener ese archivo es necesario generar algunos archivos auxiliares: primero, el índice del genoma de referencia, después los alineamientos en formato SAM (no comprimidos) y finalmente un archivo BAM, que es la versión comprimida del SAM (todavía no ordenado). La jerarquía de condiciones de ejecución siguiente permitirá borrar los archivos auxiliares, para ahorrar espacio, y no tener que generarlos de nuevo cada vez que compilemos este documento si el archivo final ya está presente en la carpeta de trabajo.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_unsorted.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089.sam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">wget</span> <span class="at">-o</span> /dev/null <span class="at">-O</span> referencia.fa <span class="dt">\</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>           <span class="cf">fi</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>         <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa.bwt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>           <span class="ex">/home/susana/bin/bwa/bwa</span> index referencia.fa</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>         <span class="cf">fi</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>         <span class="ex">/home/susana/bin/bwa/bwa</span> mem <span class="at">-M</span> <span class="at">-R</span> <span class="st">&#39;@RG\tID:DRR025089\tSM:SAMD00022947&#39;</span> <span class="dt">\</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">-o</span> DRR025089.sam <span class="dt">\</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                 referencia.fa <span class="dt">\</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                 DRR025089_1_clean.fastq <span class="dt">\</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                 DRR025089_2_clean.fastq <span class="dt">\</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span><span class="op">&gt;</span> bwa.log <span class="dv">2</span><span class="op">&gt;</span> bwa.err</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>      <span class="cf">fi</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">samtools</span> view <span class="at">-b</span> <span class="at">-o</span> DRR025089_unsorted.bam DRR025089.sam</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> sort <span class="at">-o</span> DRR025089.bam DRR025089_unsorted.bam</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> index DRR025089.bam</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>     <span class="cf">if</span> <span class="bu">[</span> <span class="ot">-e</span> DRR025089.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rm</span> referencia.fa</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/bin</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_unsorted.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089.sam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">wget</span> <span class="at">-o</span> /dev/null <span class="at">-O</span> referencia.fa <span class="dt">\</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>           <span class="cf">fi</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>         <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa.bwt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>            <span class="ex">bwa</span> index referencia.fa</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>         <span class="cf">fi</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>         <span class="ex">bwa</span> mem <span class="at">-M</span> <span class="at">-R</span> <span class="st">&#39;@RG\tID:DRR025089\tSM:SAMD00022947&#39;</span> <span class="dt">\</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">-o</span> DRR025089.sam <span class="dt">\</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                 referencia.fa <span class="dt">\</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                 DRR025089_1_clean.fastq <span class="dt">\</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                 DRR025089_2_clean.fastq <span class="dt">\</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span><span class="op">&gt;</span> bwa.log <span class="dv">2</span><span class="op">&gt;</span> bwa.err</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>      <span class="cf">fi</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>      <span class="ex">samtools</span> view <span class="at">-b</span> <span class="at">-o</span> DRR025089_unsorted.bam DRR025089.sam</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> sort <span class="at">-o</span> DRR025089.bam DRR025089_unsorted.bam</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> index DRR025089.bam</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>     <span class="cf">if</span> <span class="bu">[</span> <span class="ot">-e</span> DRR025089.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rm</span> referencia.fa</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>bash: -c: line 26: syntax error: unexpected end of file</code></pre>
+<pre><code>bash: -c: line 27: syntax error: unexpected end of file</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
@@ -3396,27 +3400,28 @@ Desafíos
 <p>Además, sería conveniente condicionar dicho comando para que se ejecute solo si existe el archivo final que contiene el mapeo (<em>DRR025089.bam</em>), ya que así nos aseguramos de no perder el genoma de referencia si, por cualquier inconveniente, el código falla en algún punto y no nos genera el archivo a la primera.</p></li>
 <li><p>En un bloque de órdenes nuevo, alinea también los pares de lecturas cortas que <code>fastp</code> había combinado (<code>DRR025089_m_clean.fastq</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_merged.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_merged_unsorted.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_merged.sam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">wget</span> <span class="at">-o</span> /dev/null <span class="at">-O</span> referencia.fa <span class="dt">\</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>           <span class="cf">fi</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>         <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa.bwt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>           <span class="ex">/home/susana/bin/bwa/bwa</span> index referencia.fa</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>         <span class="cf">fi</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>         <span class="ex">/home/susana/bin/bwa/bwa</span> mem <span class="at">-M</span> <span class="at">-R</span> <span class="st">&#39;@RG\tID:DRR025089\tSM:SAMD00022947&#39;</span> <span class="dt">\</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">-o</span> DRR025089_merged.sam <span class="dt">\</span></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                 referencia.fa <span class="dt">\</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>                 DRR025089_m_clean.fastq</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span><span class="op">&gt;</span> bwa.log <span class="dv">2</span><span class="op">&gt;</span> bwa.err</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>      <span class="cf">fi</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>      <span class="ex">samtools</span> view <span class="at">-b</span> <span class="at">-o</span> DRR025089_merged_unsorted.bam DRR025089_merged.sam</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> sort <span class="at">-o</span> DRR025089_merged.bam DRR025089_merged_unsorted.bam</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> index DRR025089_merged.bam</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/bin</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_merged.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_merged_unsorted.bam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089_merged.sam <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">wget</span> <span class="at">-o</span> /dev/null <span class="at">-O</span> referencia.fa <span class="dt">\</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        https://www.ebi.ac.uk/ena/browser/api/fasta/GCA_042137995.2</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>           <span class="cf">fi</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>         <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> referencia.fa.bwt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>            <span class="ex">bwa</span> index referencia.fa</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>         <span class="cf">fi</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>         <span class="ex">bwa</span> mem <span class="at">-M</span> <span class="at">-R</span> <span class="st">&#39;@RG\tID:DRR025089\tSM:SAMD00022947&#39;</span> <span class="dt">\</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">-o</span> DRR025089_merged.sam <span class="dt">\</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>                 referencia.fa <span class="dt">\</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>                 DRR025089_m_clean.fastq</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span><span class="op">&gt;</span> bwa.log <span class="dv">2</span><span class="op">&gt;</span> bwa.err</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>      <span class="cf">fi</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">samtools</span> view <span class="at">-b</span> <span class="at">-o</span> DRR025089_merged_unsorted.bam DRR025089_merged.sam</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> sort <span class="at">-o</span> DRR025089_merged.bam DRR025089_merged_unsorted.bam</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">samtools</span> index DRR025089_merged.bam</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></li>
 <li><p>Lee la lista de funciones que te ofrece <code>samtools</code> al ejecutarlo sin ningún argumento. ¿Qué función usarías para combinar dos archivos BAM en uno?</p>
 <p>La función <code>cat</code>, que pone que sirve para concatenar archivos BAM.</p></li>
@@ -3507,9 +3512,10 @@ SN  reads mapped and paired:    221944  # paired-end technology bit set + both m
 <section id="identificación-de-variantes" class="level1">
 <h1>Identificación de variantes</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089.vcf <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>   <span class="ex">/home/susana/miniconda3/bin/freebayes</span> <span class="at">-p</span> 1 <span class="at">-f</span> referencia.fa DRR025089.bam <span class="op">&gt;</span> DRR025089.vcf</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/miniconda3/bin</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> DRR025089.vcf <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>   <span class="ex">freebayes</span> <span class="at">-p</span> 1 <span class="at">-f</span> referencia.fa DRR025089.bam <span class="op">&gt;</span> DRR025089.vcf</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Con <code>freebayes</code> comparamos las lecturas alineadas de nuestro archivo BAM contra el genoma de referencia para encontrar diferencias como cambios de nucleótidos, inserciones o deleciones pequeñas; todas esas diferencias que serían las <strong>mutaciones</strong> presentes en nuestra cepa respecto al genoma de referencia. Como resultado, se genera un archivo .vcf con todas las variantes detectadas, en nuestro caso, <em>DRR025089.vcf.</em></p>
 
