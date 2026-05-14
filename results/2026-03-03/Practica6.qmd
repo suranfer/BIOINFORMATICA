@@ -473,8 +473,8 @@ búsqueda cada vez que le doy al botón `Render`.
 
 ```{r}
 # Si ya existe la tabla, la cargamos:
-if (file.exists('equinodermata.Rds')) {
-   equinodermata <- readRDS(file = 'equinodermata.Rds')
+if (file.exists('../../data/equinodermata.Rds')) {
+   equinodermata <- readRDS(file = '../../data/equinodermata.Rds')
 # Si no existe, la creamos:
 } else {
    primera <- fromJSON(paste0(API, 'entry/pfam/taxonomy/uniprot/7586'))
@@ -499,8 +499,8 @@ haya más dominios proteicos conocidos de cordados. Por cierto, los
 cordados son el taxon 7711.
 
 ```{r}
-if (file.exists('chordata.Rds')) {
-   chordata <- readRDS(file = 'chordata.Rds')
+if (file.exists('../../data/chordata.Rds')) {
+   chordata <- readRDS(file = '../../data/chordata.Rds')
 } else {
    primera <- fromJSON(paste0(API, 'entry/pfam/taxonomy/uniprot/7711'))
    todas <- list(primera[['results']][['metadata']])
