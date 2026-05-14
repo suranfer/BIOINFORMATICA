@@ -3342,7 +3342,7 @@ border: 0;
     <div>
     <div class="quarto-title-meta-heading">Última actualización:</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">6 de mayo de 2026</p>
+      <p class="date">14 de mayo de 2026</p>
     </div>
   </div>
   
@@ -3365,7 +3365,8 @@ border: 0;
 curl -o dataformat &#39;https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat&#39;
 
 chmod +x datasets dataformat (para hacerlos ejecutables)</code></pre>
-<p>Una vez ya son programas ejecutables los moví a mi carpeta ~/bin, ya que ese directorio está incluido en mi PATH. Sin embargo, al ejecutar el chunk Bash de abajo no funcionaron, por lo que R sigue sin reconocer correctamente mi PATH y es necesario incluir el path relativo de los programas a la hora de ejecutarlos.</p>
+<p>Una vez ya son programas ejecutables los moví a mi carpeta ~/bin, ya que es la carpeta fuera de mi “cuaderno de prácticas” donde guardo los ejecutables y está incluida en mi PATH.</p>
+<p>Sin embargo, al ejecutar el chunk Bash de abajo no funcionaron: tal parece que R no reconoce correctamente mi PATH. Por recomendación de Ignasi configuré manualmente cada chunk de Bash en el que necesitara utilizar dichos programas con el siguiente código al inicio: <code>export PATH=$PATH:~/bin</code> y eso ha solucionado el problema. Antes me veía forzada a incluir el path relativo de los programas cada vez que debía ejecutarlos.</p>
 </section>
 <section id="objetivos" class="level1">
 <h1>Objetivos</h1>
@@ -3379,11 +3380,12 @@ chmod +x datasets dataformat (para hacerlos ejecutables)</code></pre>
 <h1>Datos</h1>
 <p>Supón que tenemos interés en descargar un genoma de referencia de cualquier especie del género <em>Trypanosoma</em>, así como su anotación funcional, en formato <a href="https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md">GFF3</a>. Veamos primero de qué opciones disponemos:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span>  trypanosoma_annotated.txt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>   <span class="ex">/home/susana/bin/datasets</span> summary genome taxon Trypanosoma <span class="at">--annotated</span> <span class="at">--as-json-lines</span> <span class="kw">|</span> <span class="dt">\</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>   <span class="ex">/home/susana/bin/dataformat</span> tsv genome <span class="at">--fields</span> <span class="dt">\</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      accession,organism-name,assminfo-release-date,assminfo-level,assmstats-atgc-count,annotinfo-featcount-gene-total,assminfo-type,assminfo-status <span class="op">&gt;</span> trypanosoma_annotated.txt</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/bin</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span>  trypanosoma_annotated.txt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>   <span class="ex">datasets</span> summary genome taxon Trypanosoma <span class="at">--annotated</span> <span class="at">--as-json-lines</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>   <span class="ex">dataformat</span> tsv genome <span class="at">--fields</span> <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      accession,organism-name,assminfo-release-date,assminfo-level,assmstats-atgc-count,annotinfo-featcount-gene-total,assminfo-type,assminfo-status <span class="op">&gt;</span> trypanosoma_annotated.txt</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>La línea larga que sigue a <code>--fields</code> especifica qué información sobre los genomas queremos ver en la tabla. Para saber qué campos se pueden seleccionar, puedes ejecutar la orden <code>dataformat tsv genome --help</code>. Veamos esa tabla en el informe HTML en un formato adecuado, para lo cual utilizaremos la función <strong><code>read.table</code></strong>:</p>
 <div class="cell" data-messages="false">
@@ -4226,12 +4228,13 @@ Desafío
 <h1>Archivos JSON y GFF</h1>
 <p>Habiendo visto las opciones, decidimos descargar el genoma y la anotación funcional de una de ellas, por ejemplo <strong>GCA_022059095.1</strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> ncbi_data/data/GCA_022059095.1/genomic.gff <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> ncbi_dataset.zip <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>      <span class="ex">/home/susana/bin/datasets</span> download genome accession GCA_022059095.1 <span class="at">--include</span> genome,gff3</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>   <span class="cf">fi</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">unzip</span> ncbi_dataset.zip</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/bin</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> ncbi_data/data/GCA_022059095.1/genomic.gff <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-e</span> ncbi_dataset.zip <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>      <span class="ex">datasets</span> download genome accession GCA_022059095.1 <span class="at">--include</span> genome,gff3</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>   <span class="cf">fi</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">unzip</span> ncbi_dataset.zip</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Archive:  ncbi_dataset.zip
 replace README.md? [y]es, [n]o, [A]ll, [N]one, [r]ename:  NULL
