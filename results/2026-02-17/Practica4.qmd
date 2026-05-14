@@ -44,10 +44,16 @@ chmod +x datasets dataformat (para hacerlos ejecutables)
 ```
 
 Una vez ya son programas ejecutables los moví a mi carpeta \~/bin, ya
-que ese directorio está incluido en mi PATH. Sin embargo, al ejecutar el
-chunk Bash de abajo no funcionaron, por lo que R sigue sin reconocer
-correctamente mi PATH y es necesario incluir el path relativo de los
-programas a la hora de ejecutarlos.
+que es la carpeta fuera de mi "cuaderno de prácticas" donde guardo los
+ejecutables y está incluida en mi PATH.
+
+Sin embargo, al ejecutar el chunk Bash de abajo no funcionaron: tal
+parece que R no reconoce correctamente mi PATH. Por recomendación de
+Ignasi configuré manualmente cada chunk de Bash en el que necesitara
+utilizar dichos programas con el siguiente código al inicio:
+`export PATH=$PATH:~/bin` y eso ha solucionado el problema. Antes me
+veía forzada a incluir el path relativo de los programas cada vez que
+debía ejecutarlos.
 
 # Objetivos
 
@@ -64,9 +70,10 @@ funcional, en formato
 Veamos primero de qué opciones disponemos:
 
 ```{bash}
+export PATH=$PATH:~/bin
 if [ ! -e  trypanosoma_annotated.txt ]; then
-   /home/susana/bin/datasets summary genome taxon Trypanosoma --annotated --as-json-lines | \
-   /home/susana/bin/dataformat tsv genome --fields \
+   datasets summary genome taxon Trypanosoma --annotated --as-json-lines | \
+   dataformat tsv genome --fields \
       accession,organism-name,assminfo-release-date,assminfo-level,assmstats-atgc-count,annotinfo-featcount-gene-total,assminfo-type,assminfo-status > trypanosoma_annotated.txt
 fi
 ```
@@ -157,9 +164,10 @@ Habiendo visto las opciones, decidimos descargar el genoma y la
 anotación funcional de una de ellas, por ejemplo **GCA_022059095.1**.
 
 ```{bash}
+export PATH=$PATH:~/bin
 if [ ! -e ncbi_data/data/GCA_022059095.1/genomic.gff ]; then
    if [ ! -e ncbi_dataset.zip ]; then
-      /home/susana/bin/datasets download genome accession GCA_022059095.1 --include genome,gff3
+      datasets download genome accession GCA_022059095.1 --include genome,gff3
    fi
    unzip ncbi_dataset.zip
 fi
