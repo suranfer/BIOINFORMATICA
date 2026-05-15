@@ -86,7 +86,7 @@ enlace](https://www.cog-genomics.org/plink/2.0/formats#glm_linear):
 Cargamos los datos en una sesión de R para empezar a explorarlos:
 
 ```{r}
-gwas <- read.table('gwas.txt')
+gwas <- read.table('../../data/gwas.txt')
 ```
 
 ::: {.callout-note icon="false"}
@@ -100,7 +100,7 @@ los ha incluido como una fila más, para corregirlo y tener el dataframe
 en el formato deseado:
 
 ```{r}
-gwas <- read.table('gwas.txt', header = TRUE, sep = '\t')
+gwas <- read.table('../../data/gwas.txt', header = TRUE, sep = '\t')
 ```
 
 Además, nos será útil para más adelante eliminar aquellos datos que en
@@ -464,7 +464,6 @@ de datos una columna con el valor *q* [^1], calculado con la función
     al de ese test.
 
 ```{r}
-library('qvalue')
 gwas$q <- qvalue(gwas$P)$qvalues
 ggplot(data = gwas,
        mapping = aes(x = BETA, y = -log(P), color = q)) +
