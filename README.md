@@ -13,6 +13,6 @@ En mi caso, necesité recurrir a WSL para tener acceso a las facilidades de Linu
 
 En cuanto a los programas, paquetes o dependencias utilizados, en cada guión se especifica cuáles serán necesarios y cómo instalarlos. Del mismo modo con los datos: se indica cuáles son necesarios para cada análisis y dónde encontrarlos.
 
-Dicho esto, espero que os sirva de ayuda y os sea útil. 
+Dicho esto, espero que os sea útil y os sirva de ayuda.
 
 Gracias!
