@@ -1,0 +1,394 @@
+---
+title: "Práctica 12. Análisis de expresión diferencial"
+lang: es
+date: today
+execute: 
+  output: true
+  error: true
+engine: knitr
+bibliography: ../../doc/references.bib
+language:
+   title-block-published: "Última actualización:"
+   section-title-references: "Bibliografía"
+format:
+   html:
+      embed-resources: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# Preparación
+
+Sólo necesitamos instalar el paquete `DESeq2` de Bioconductor:
+
+```{r}
+#| eval: false
+BiocManager::install('DESeq2')
+```
+
+# Datos
+
+Utilizaremos las medidas de expresión génica del archivo
+`salmon.merged.gene_counts.tsv` que se puede descargar en [este
+enlace](https://informatics.fas.harvard.edu/resources/tutorials/data/salmon.merged.gene_counts.tsv)
+o en el aula virtual. Los datos proceden de 12 genotecas de RNA-seq de
+lecturas emparejadas, de muestras de *Drosophila melanogaster* de dos
+orígenes geográficos (Panamá y Maine) y dos tratamientos de temperatura
+(*low* y *high*) ([Zhao
+2015](https://aulavirtual.uv.es/pluginfile.php/6039768/mod_resource/content/1/guio-es.html#ref-Zhao2015)).
+Hay 3 réplicas biológicas para cada combinación de región y temperatura.
+
+Además, necesitáis el archivo `dme_elev_samples.tsv`, una tabla que
+indica a qué región y tratamiento pertenece cada muestra. Se puede
+descargar de [este otro
+enlace](https://informatics.fas.harvard.edu/resources/tutorials/data/dme_elev_samples.tsv)
+o del aula virtual.
+
+[Ambos archivos deben estar guardados en la carpeta de
+`data`.]{.underline}
+
+# Exploración de los datos
+
+```{r}
+muestras <- read.table('../../data/dme_elev_samples.tsv', header = TRUE)
+genex <- read.table('../../data/salmon.merged.gene_counts.tsv', header = TRUE)
+```
+
+::: {.callout-note icon="false"}
+## Ejercicio 1
+
+Recuerda dejar constancia en un bloque de código de cómo obtienes las
+respuestas.
+
+1.  Usa la función `paste()` para añadir una columna a `muestras` que
+    contenga la población y la temperatura unidas por `_`.
+
+    ```{r}
+    muestras$pop_temp <- paste(muestras$population, muestras$temp, sep = "_")
+    ```
+
+2.  ¿Cuál es el número total de lecturas por muestra?
+
+    ```{r}
+    colSums(genex[, -c(1,2)])
+    ```
+
+3.  ¿Los recuentos tienen distribuciones parecidas entre muestras?
+
+    ```{r}
+    distribuciones <- genex[, 3:ncol(genex)]
+    boxplot(log10(distribuciones + 1))
+    ```
+
+    Con estos diagramas de caja vemos cómo las distribuciones de los
+    recuentos en las 12 muestras son muy parecidas, por lo que el rango
+    de counts es similar: no hay muestras con todos los genes
+    sobreexpresados o todos con muy poca expresión.
+
+4.  ¿Cuántos genes no se expresan en absoluto en ninguna de las
+    muestras?
+
+    ```{r}
+    sum(rowSums(genex[, 3:14]) == 0)
+    ```
+
+    Para eliminar estos genes de expresión nula definimos un filtro y lo
+    aplicamos en un nuevo dataframe "corregido":
+
+    ```{r}
+    f <- rowSums(genex[, 3:14]) > 0
+    genex_correg <- genex[f, ]
+    ```
+:::
+
+# Crear el objeto de clase `DESeqDataSet`
+
+Para crear un objeto de clase `DESeqDataSet` necesitamos que las filas
+de la tabla `muestras` estén en el mismo orden que las columnas
+en `genex`. La función `DESeqDataSetFromMatrix()` necesita que los
+recuentos sean una matriz, no un marco de datos. Y en `muestras` debe
+haber **factores**.
+
+```{r}
+suppressMessages(library('DESeq2'))
+all(names(genex)[3:14] == muestras$sample)
+```
+
+```{r}
+# Pasamos la columna "sample" a nombres de fila:
+row.names(muestras) <- muestras$sample
+# Eliminamos la columna "sample":
+muestras$sample <- NULL
+# Y convertimos "population" y "temp" en factores:
+muestras$population <- factor(muestras$population,
+                              levels = c('maine', 'panama'))
+muestras$temp       <- factor(muestras$temp,
+                              levels = c('low', 'high'))
+muestras
+```
+
+Aunque no hacía falta definir los niveles de los factores, lo indico
+porque es un buen momento para definir manualmente su orden (por defecto
+se ordenan alfabéticamente). El orden de los niveles determina qué nivel
+actúa como referencia en los contrastes estadísticos (el primero). Esto
+resultaría importante, por ejemplo, al comparar tratamientos respecto de
+un control.
+
+Los datos de recuento deben ser números enteros y en forma de matriz:
+
+```{r}
+row.names(genex) <- genex$gene_name
+genex$gene_name <- NULL
+genex$gene_id   <- NULL
+genex <- round(as.matrix(genex))
+```
+
+```{r}
+dds1 <- DESeqDataSetFromMatrix(
+   countData = genex,
+   colData = muestras,
+   design = ~ population + temp
+)
+dds1
+```
+
+::: callout-tip
+## Nota
+
+Los objetos `DESeqDataSet` pueden contener información sobre las
+coordenadas cromosómicas de los genes o transcritos, si se construyen a
+partir de otro tipo de datos.
+:::
+
+# Pre-filtrado
+
+Una fracción importante de genes no se están expresando en ningúna
+muestra. Aunque el filtrado no es obligatorio, ayuda a reducir la
+memoria ocupada por `dds1`:
+
+```{r}
+keep <- rowSums(counts(dds1)) > 0
+dds1 <- dds1[keep, ]
+```
+
+# Expresión diferencial
+
+La función `DESeq()` produce también un objeto de clase `DESeqDataSet`,
+pero con resultados añadidos:
+
+```{r}
+dds1 <- DESeq(dds1)
+```
+
+`DESeq()` realiza 3 pasos:
+
+1.  Aplica factores de normalización a las muestras (size factor).
+2.  Estima la dispersión entre réplicas (en este caso, hay 3).
+3.  Aplica los tests estadísticos y ajusta la binomial negativa.
+
+```{r}
+res <- results(dds1)
+res
+```
+
+El parámetro *baseMean* indica el nivel de expresión basal y para
+interpretarlo debemos tener en cuenta cuál es el nivel de referencia, en
+este caso, *low*. Por tanto, si la relación es positiva (\>1), significa
+que esos genes se expresan mejor a altas temperaturas; y si la relación
+es negativa (\<1), al contrario.
+
+Por defecto, la función `results()` produce la tabla de resultados para
+el contraste entre el nivel último y el de referencia del último factor
+en la tabla que describe las muestras. En este caso, el factor es `temp`
+(temperatura), el nivel de referencia es `low` y el otro nivel
+es `high`. Por tanto, los valores de `log2FoldChange` representan el
+logaritmo en base 2 de la relación entre niveles de expresión en
+muestras `high` respecto de muestras `low`.
+
+::: {.callout-note icon="false"}
+## Ejercicio 2
+
+1.  Mira la ayuda de `results()` y genera también la tabla de resultados
+    para el contraste entre las dos regiones de procedencia de las
+    moscas:
+
+    ```{r}
+    res2 <- results(dds1, contrast = c('population', 'panama', 'maine'))
+    res2
+    ```
+
+2.  Usa `summary()` sobre los resultados para ver el número de genes
+    diferencialmente expresados entre cada par de condiciones.
+
+    Para ver los resultados de la comparación de `temp`, entre `low` y
+    `high`:
+
+    ```{r}
+    summary(res)
+    ```
+
+    Y para `population`, entre `maine` y `panama`:
+
+    ```{r}
+    summary(res2)
+    ```
+
+    Los genes diferencialmente expresados son la suma del número de
+    genes sobreexpresados (LFC\>1) e infraexpresados (LFC\<1). (LFC=Log
+    Fold Change). Por tanto, en el primer par de condiciones
+    (temperatura), habría 4754 genes diferencialmente expresados.
+
+    Mientras que, en cuanto a población, hay un total de 1257 genes
+    diferencialmente expresados.
+
+    Por tanto, podemos concluir que la temperatura afecta más a la
+    expresión génica de estos individuos que la localización geográfica.
+
+3.  ¿Cuál es la tasa de falsos positivos (FDR)?
+
+    Sería el p-valor \< 0,1, es decir, un FDR (*false discovery rate*)
+    del 10% .
+
+    En la función `results` se puede cambiar el parámetro `alpha` para
+    ajustar el p-valor (FDR) admitido.
+:::
+
+# Gráficas
+
+```{r}
+plotMA(res)
+```
+
+Los genes con niveles de expresión más bajos producen resultados más
+ruidosos porque la varianza es mayor. La función `lfcShrink()` contrae
+(*shrink*) las estimaciones de los efectos (*log fold change*) para
+reducir el ruido y hacer el resultado más realista:
+
+```{r}
+resShrink <- lfcShrink(dds1, coef = 'temp_high_vs_low',
+                       type = 'normal')
+plotMA(resShrink)
+```
+
+::: {.callout-note icon="false"}
+## Ejercicio 3
+
+¿Sabrías hacer una gráfica volcán?
+
+```{r}
+#| message: false
+
+library('tidyverse')
+library('ggplot2')
+```
+
+```{r}
+res_volcan <- as.data.frame(res)
+res_volcan$sign <- "Expresión normal"
+res_volcan$sign[res_volcan$padj < 0.1 & res_volcan$log2FoldChange > 0] <- "Sobreexpresado"
+res_volcan$sign[res_volcan$padj < 0.1 & res_volcan$log2FoldChange < 0] <- "Infraexpresado"
+
+ggplot(data = res_volcan, mapping = aes(x = log2FoldChange, y = - log10(padj), color = sign)) +
+  geom_point() +
+  geom_abline(intercept = - log10(0.1), slope = 0, linetype = 2, color = "grey") +
+  scale_color_manual(values = c("Expresión normal" = "grey", "Sobreexpresado" = "red", "Infraexpresado" = "blue"))
+```
+:::
+
+# Extraer datos transformados
+
+No es necesario que los datos de entrada estén normalizados para aplicar
+la función `DESeq()`, ya que ésta ya tiene en cuenta las diferencias de
+tamaño de genoteca entre muestras y la relación entre media y varianza.
+Para lo que sí es útil y recomendable disponer de los datos normalizados
+es para representarlos gráficamente. Para ello podemos usar las
+funciones `vst()` y `assay()`:
+
+```{r}
+dds2 <- vst(dds1)
+NormCounts <- assay(dds2)
+```
+
+Y una vez normalizados:
+
+```{r}
+res <- res[! is.na(res$pvalue), ]
+res <- res[order(res$log2FoldChange),]
+heatmap(NormCounts[c(head(row.names(res), 100),
+                     tail(row.names(res), 100)), ],
+        Rowv = NA, Colv = NA)
+```
+
+::: {.callout-note icon="false"}
+## Ejercicio 4
+
+¿Podrías explicar qué hace el bloque de código anterior?
+
+Si lo desglosamos línea por línea:
+
+`res <- res[! is.na(res$pvalue), ]`: elimina los genes que no tienen
+datos de p-valor (NA).
+
+`res <- res[order(res$log2FoldChange),]`: ordena los genes de forma
+ascendente en función de su LFC.
+
+`heatmap(NormCounts[c(head(row.names(res), 100), tail(row.names(res), 100)), ], Rowv = NA, Colv = NA)`:
+crea un heatmap con los 100 primeros y los 100 últimos genes a partir de
+la matriz con los datos normalizados (`NormCounts`). Dado que están
+organizados de menor a mayor LFC, los 100 primeros son los más
+infraexpresados y los 100 últimos los más sobreexpresados. Además, se
+añade el `Rowv` y `Colv` para evitar que el heatmap reordene
+automáticamente las filas o columnas y mantener el orden que ya hemos
+establecido.
+:::
+
+::: {.callout-note icon="false"}
+## Ejercicio 5
+
+En [este
+enlace](https://aulavirtual.uv.es/pluginfile.php/6039768/mod_resource/content/1/guio-es.html)
+analizan exactamente los mismos datos con otro paquete de R: `limma`.
+Una de sus conclusiones es que se sobreexpresan más genes en temperatura
+baja que en temperatura alta. ¿Confirma tu análisis esta conclusión?
+
+Comprobemos los valores de LFC en nuestros datos:
+
+```{r}
+head(res$log2FoldChange)
+```
+
+```{r}
+tail(res$log2FoldChange)
+```
+
+En vista de esto, sí que parece haber mayor sobreexpresión a
+temperaturas bajas que altas.
+
+Estos son los 10 genes más diferencialmente expresados según aquel
+análisis entre las condiciones de baja y alta temperatura:
+
+```         
+                  logFC   AveExpr       t     P.Value      adj.P.Val      B
+Cpr92F          2.473527 6.201774  24.28881 1.306910e-13 1.739105e-09 21.29258
+Vajk3           1.675184 4.029281  21.90298 6.069753e-13 3.524528e-09 19.66813
+lncRNA:CR46017 -3.974938 1.044005 -21.50807 7.945880e-13 3.524528e-09 16.80878
+CG7214          2.198970 7.945664  20.75054 1.349821e-12 4.490516e-09 19.14847
+CG3739         -2.869172 6.514652 -20.49734 4.414988e-12 1.175005e-08 18.01975
+Acp1            2.231834 7.638125  17.79441 2.089853e-11 3.997808e-08 16.54909
+```
+
+¿Cómo se comparan estos resultados con los tuyos?
+
+```{r}
+rownames(head(res, 10))
+```
+
+```{r}
+rownames(tail(res, 10))
+```
+
+Ninguno de los genes que, en nuestros datos, son los más
+diferencialmente expresados coinciden con los obtenidos en el análisis
+con `limma`.
+:::
